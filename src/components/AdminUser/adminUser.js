@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "../AdminUser/ListUser.css";
 import AddDialog from '../AddUser/addDialog';
 import DelDialog from '../DeleteUser/delDialog';
@@ -14,15 +14,26 @@ import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import SearchIcon from "@material-ui/icons/Search";
 import TextField from "@material-ui/core/TextField";
-import { openDialog, openDelDialog, selectedDeleteUser, openUpdateDialog, selectedUpdateUser, inputSearching, inputTxt } from '../../redux/action/index';
+import { openDialog, openDelDialog, selectedDeleteUser, openUpdateDialog, selectedUpdateUser, inputSearching, inputTxt, getUser } from '../../redux/action/index';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import Axios from 'axios';
 
-
+const url = "http://jsonplaceholder.typicode.com/users"
 const AdminUser = (props) => {
   const { users, inputSearch } = props;
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const result = await axios(
+  //       `http://jsonplaceholder.typicode.com/users`
+  //     );
+  //     dispatch(getUser(result.users))
+  //   }
+  //   fetchData();
+  // }, [])
+
   const _onSearch = (e) => {
     const value = e.target.value;
     dispatch(inputSearching(value));
@@ -53,7 +64,7 @@ const AdminUser = (props) => {
         color="primary"
         aria-label="add"
         className="icon-add"
-        onClick={() => {dispatch(openDialog(true));dispatch(inputTxt(""))}}
+        onClick={() => { dispatch(openDialog(true)); dispatch(inputTxt("")) }}
       >
         <AddIcon />
       </Fab>
@@ -68,15 +79,15 @@ const AdminUser = (props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {_searchList.map((user, index) => (
+          {users.map((_user, index) => (
             <TableRow key={index}>
-              <TableCell align="center">{user.username}</TableCell>
-              <TableCell align="center">{user.password}</TableCell>
-              <TableCell align="center">{user.role}</TableCell>
-              <TableCell align="center">{user.email}</TableCell>
+              <TableCell align="center">{_user.username}</TableCell>
+              <TableCell align="center">{_user.password}</TableCell>
+              <TableCell align="center">{_user.role}</TableCell>
+              <TableCell align="center">{_user.email}</TableCell>
               <TableCell align="center">
                 <IconButton >
-                  <EditIcon onClick={() => { dispatch(openUpdateDialog(true)); dispatch(selectedUpdateUser(user)) }} />
+                  <EditIcon onClick={() => { dispatch(openUpdateDialog(true)); dispatch(selectedUpdateUser(_user)) }} />
                 </IconButton>
                 <IconButton key={index} color="secondary" onClick={() => { dispatch(openDelDialog(true)); dispatch(selectedDeleteUser(index)) }} >
                   <DeleteIcon />

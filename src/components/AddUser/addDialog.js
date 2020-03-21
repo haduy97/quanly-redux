@@ -11,19 +11,33 @@ import { closeDialog, addDialog, inputTxt } from '../../redux/action';
 import TextField from '@material-ui/core/TextField';
 import addIcon from '../../img/usericon.png';
 import '../AdminUser/ListUser.css';
+import { isRequired, validators, setValidators } from '../../services/index';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles({
+    error: {
+        color: "red",
+        opacity: "0.8"
+    },
+})
 
 const AddDialog = (props) => {
     const { openAdd, inputText, currencies } = props
-    // const [inputText, setInputText] = useState("");
-    const dispatch = useDispatch()
+    const classes = useStyles();
+    const name = useState("");
+    const dispatch = useDispatch();
     const _onChange = (e) => {
         const name = e.target.name;
         const value = e.target.value;
+        if (validators[name] && isRequired(value)) {
+            setValidators(name, true)
+        } else if (validators[name]) {
+            setValidators(name, false)
+        }
         dispatch(inputTxt({ ...inputText, [name]: value }));
-    }
+    };
     const newItem = { ...inputText };
-
-    // Validation
+    
     const _usernameValidate = (username) => {
         const MIN_LENGTH = 3;
         const MAX_LENGTH = 20;
@@ -61,7 +75,7 @@ const AddDialog = (props) => {
         }
         return true;
     }
-    // const _roleValidate = ()
+
     const _onAddHandle = (newItem) => {
         if (_usernameValidate(newItem.username) && _passwordValidate(newItem.password) && _emailValidate(newItem.email)) {
             dispatch(addDialog(newItem));
@@ -79,16 +93,37 @@ const AddDialog = (props) => {
 
                 <DialogContent>
                     <DialogContentText>
-                        <TextField name="username" type="text" label="username" variant="outlined" onChange={_onChange} />
+                        <TextField name="username" type="text" label="username" variant="outlined"
+                            className={classes.error}
+                            error={validators['username'].error}
+                            helperText={validators['username'].error ? validators['username'].message : ''}
+                            onChange={_onChange} />
                         <br /><br />
-                        <TextField name="password" type="password" label="password" variant="outlined" onChange={_onChange} /><br /><br />
-                        <TextField select className="select-role" name="role" type="text" label="role" variant="outlined" onChange={_onChange} value={inputText.role ? inputText.role : 'Member'} >
+
+                        <TextField name="password" type="password" label="password" variant="outlined"
+                            className={classes.error}
+                            error={validators['password'].error}
+                            helperText={validators['password'].error ? validators['password'].message : ''}
+                            onChange={_onChange} /><br /><br />
+
+                        <TextField select fullWidth={100} name="role" type="text" label="role" variant="outlined"
+                            className={classes.error}
+                            error={validators['role'].error}
+                            helperText={validators['role'].error ? validators['role'].message : ''}
+                            onChange={_onChange}
+                            value={inputText.role ? inputText.role : ''} >
                             {currencies.map(option => (
                                 <MenuItem key={option.value} value={option.value}>
                                     {option.value}
                                 </MenuItem>
                             ))}</TextField><br /><br />
-                        <TextField name="email" type="text" label="email" variant="outlined" onChange={_onChange} />
+
+                        <TextField name="email" type="text" label="email" variant="outlined"
+                            className={classes.error}
+                            error={validators['email'].error}
+                            helperText={validators['email'].error ? validators['email'].message : ''}
+                            onChange={_onChange} />
+
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>

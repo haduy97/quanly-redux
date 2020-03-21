@@ -1,13 +1,19 @@
 import { GET_USER, OPEN_ADD, CLOSE_ADD, OPEN_DEL, CLOSE_DEL,SELECT_DEL, ADD_USER, DELETE_USER, OPEN_UPDATE, CLOSE_UPDATE, UPDATE_USER,INPUT_TXT, SELECT_UPDATE,INPUT_SEARCH } from '../constant/action-types'
 
+const api = "http://jsonplaceholder.typicode.com/users";
+
 export const getUser = (payload) => (dispatch) => {
-    dispatch({
-        type: GET_USER,
-        payload,
-        meta: {
-            resource: "user"
-        }
-    });
+    return dispatch => {
+        fetch(`${api}`).then(res => {
+            res.json().then(users => {
+                dispatch({
+                    type: GET_USER,
+                    payload,
+                    meta: {resource: "user"}
+                });
+            });
+        });
+    };
 }
 export const inputTxt = (payload) => (dispatch) => {
     dispatch({
